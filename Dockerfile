@@ -32,11 +32,19 @@ FROM node:18 AS node-builder
 
 WORKDIR /app
 
-# Copy the entire application first
-COPY . /app
+# Copy package files first
+COPY package*.json ./
 
-# Install dependencies with optional deps for Linux
-RUN npm install --include=optional
+# Clean install with optional dependencies for Linux
+RUN rm -rf node_modules package-lock.json && \
+    npm install --include=optional
+
+# Copy application files (excluding node_modules from host)
+COPY vite.config.js ./
+COPY tailwind.config.js* ./
+COPY postcss.config.js* ./
+COPY resources ./resources
+COPY public ./public
 
 # Set environment for production build
 ENV NODE_ENV=production
