@@ -32,24 +32,13 @@ FROM node:18 AS node-builder
 
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package*.json ./
+# Copy the entire application first
+COPY . /app
 
-# Install dependencies (including optional dependencies for Linux build)
-RUN npm install
+# Install dependencies with optional deps for Linux
+RUN npm install --include=optional
 
-# Copy necessary config files
-COPY vite.config.js ./
-COPY tailwind.config.js* ./
-COPY postcss.config.js* ./
-
-# Copy resources directory (where Vite looks for assets)
-COPY resources ./resources
-
-# Copy public directory
-COPY public ./public
-
-# Set NODE_ENV for production build
+# Set environment for production build
 ENV NODE_ENV=production
 
 # Build frontend assets
