@@ -35,11 +35,22 @@ WORKDIR /app
 # Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --silent
+# Install dependencies (including optional dependencies for Linux build)
+RUN npm install
 
-# Copy the rest of the application
-COPY . /app
+# Copy necessary config files
+COPY vite.config.js ./
+COPY tailwind.config.js* ./
+COPY postcss.config.js* ./
+
+# Copy resources directory (where Vite looks for assets)
+COPY resources ./resources
+
+# Copy public directory
+COPY public ./public
+
+# Set NODE_ENV for production build
+ENV NODE_ENV=production
 
 # Build frontend assets
 RUN npm run build
